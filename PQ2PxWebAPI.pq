@@ -587,7 +587,7 @@ let
                             )
                         otherwise
                             null,
-                        YearIdx = [Year] + 1
+                        YearIdx = [YearIdx] + 1
                     ],
                 each
                     [
