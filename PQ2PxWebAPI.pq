@@ -7,12 +7,14 @@
 let
     func = (
         tableID as text,
-        YearIdx as nullable number
+        YearIdx as number
     ) as table =>
+
         let
             funcPxWebAPI = (
                 YearIdx as nullable number
             ) as table =>
+
                 let
                     url = "https://pxweb.irena.org:443/api/v1/en/IRENASTAT/Power Capacity and Generation/"
                         & tableID
@@ -186,11 +188,11 @@ let
                             ]
                         )
                     ),
-                    get_column_names = getJsonQuery[
+                    getColNames = getJsonQuery[
                         columns
                     ],
                     ColumnsToTable = Table.FromList(
-                        get_column_names,
+                        getColNames,
                         Splitter.SplitByNothing(),
                         null,
                         null,
@@ -210,7 +212,7 @@ let
                             "Column1.type"
                         }
                     ),
-                    keytable = Table.Transpose(
+                    keyTable = Table.Transpose(
                         Table.SelectColumns(
                             expandColumnsTable,
                             {
@@ -360,14 +362,14 @@ let
                             }
                         }
                     ),
-                    uniontable = Table.Combine(
+                    unionTable = Table.Combine(
                         {
-                            keytable,
+                            keyTable,
                             dataTable
                         }
                     ),
                     firstRowAsHeaderFromUnionTable = Table.PromoteHeaders(
-                        uniontable
+                        unionTable
                     ),
                     finalTableKeyCol = Table.AddColumn(
                         firstRowAsHeaderFromUnionTable,
@@ -637,13 +639,14 @@ let
                 Description = "Source Installed renewable electricity capacity (RECAP) data from IRENASTAT PxWeb API",
                 Code = "= PowerQueryToPxWebAPI(""RECAP"", 0)",
                 Result = "
-| region_id    | technology_id | year_id         | Installed renewable energy capacity (MW) | Region/country/area        | ROWS        | Year |
-|--------------|---------------|-----------------|------------------------------------------|----------------------------|-------------|------|
-| GLO          | 13            | 0               | 4,174.6390                               | World                      | Bagasse     | 2000 |
-| GLO          | 1             | 0               | 782,136.5899                             | World                      | Hydropower  | 2000 |
-| ZAF          | 5             | 0               | 0.0000                                   | South Africa               | Wind        | 2000 |
-| AUS          | 11            | 0               | 422.0000                                 | Australia                  | Bioenergy   | 2000 |
-| AUS          | 1             | 0               | 8,271.0000                               | Australia                  | Hydropower  | 2000 |"
+| region_id    | Region/country/area |technology_id    | Technology                  | year_id   | Year | Installed renewable energy capacity (MW) | 
+|--------------|---------------------|-----------------|-----------------------------------------|-------------------------------------------------|
+| GLO          | World               |               1 | Hydropower                  |         0 | 2000 |                              782136.5899 |
+| GLO          | World               |               0 | Total renewable energy      |         0 | 2000 |                              752962.5899 |
+| GLO          | World               |               2 | Renewable hydropower        |         0 | 2000 |                              697170.0399 |
+| RAS          | Asia                |               1 | Hydropower                  |         0 | 2000 |                               196793.822 |
+| RER          | Europe              |               1 | Hydropower                  |         0 | 2000 |                               193215.817 |
+"
             ]
         }
     ]
